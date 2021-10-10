@@ -15,6 +15,8 @@ Written in Flutter.
 * Build and run: `flutter build linux` - this will place the binary in build/linux/x64/release/bundle
 
 ## Run
+Build or [download](https://github.com/marxjohnson/quickemu_gui/releases/) the quickemu_gui binary.
+
 Run `quickemu_gui` from the directory where you have, or want, quickemu VMs to live.
 
 The app will find any quickemu config files, detect whether the associated VMs are running, and
