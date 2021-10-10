@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as Path;
 import 'dart:io';
 import 'dart:convert';
 
@@ -49,6 +50,121 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+class _MyHomePageState extends State<MyHomePage> {
+
+  List<String> _currentVms = [];
+  List<String> _activeVms = [];
+
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance
+        ?.addPostFrameCallback((_) => _getVms(context));
+  }
+
+  void _getVms(context) async {
+    Directory currentDirectory = Directory.current;
+    setState(() {
+      _currentVms = [];
+      _activeVms = [];
+    });
+
+    await for (var entity in
+      currentDirectory.list(recursive: false, followLinks: true)) {
+      if (entity.path.endsWith('.conf')) {
+        String name = Path.basenameWithoutExtension(entity.path);
+        setState(() {
+          _currentVms.add(name);
+        });
+        ProcessResult runningCheck = await Process.run('ps', ['-C', name]);
+        if (runningCheck.exitCode == 0) {
+          setState(() {
+            _activeVms.add(name);
+          });
+        }
+      }
+    }
+  }
+
+  void _showQuickgetForm() {
+    Navigator.of(context).push(
+        MaterialPageRoute<void>(
+            builder: (context) {
+              return Scaffold(
+                  appBar: AppBar(
+                    title: const Text('New VM with Quickget'),
+                  ),
+                  body: const QuickgetForm()
+              );
+            }
+        )
+    ).then(
+        (value) {
+          _getVms(context);
+        }
+    );
+  }
+
+  Widget _buildVmList() {
+    return ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: _currentVms.map(
+            (vm) {
+              return _buildRow(vm);
+            }).toList(),
+    );
+  }
+
+  Widget _buildRow(String currentVm) {
+    final active = _activeVms.contains(currentVm);
+    return ListTile(
+        title: Text(currentVm),
+        trailing: IconButton(
+            icon: Icon(
+              active ? Icons.play_arrow : Icons.play_arrow_outlined,
+              color: active ? Colors.green : null,
+              semanticLabel: active ? 'Running' : 'Run',
+            ),
+            onPressed: () {
+              if (active) {
+                Process.run('killall', [currentVm]);
+                setState(() {
+                  _activeVms.remove(currentVm);
+                });
+              } else {
+                Process.run('quickemu', ['--vm', currentVm + '.conf']);
+                setState(() {
+                  _activeVms.add(currentVm);
+                });
+              }
+            }
+        )
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
+    return Scaffold(
+      appBar: AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(widget.title),
+      ),
+      body: _buildVmList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showQuickgetForm,
+        tooltip: 'Add VM with quickget',
+        child: const Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
 class QuickgetForm extends StatefulWidget {
   const QuickgetForm({Key? key}) : super(key: key);
 
@@ -77,7 +193,7 @@ class _QuickgetFormState extends State<QuickgetForm> {
   _quickget(String os, String release) async {
     showLoadingIndicator('Downloading');
     var process = await Process.start('quickget', [os, release]);
-    process.stderr.transform(utf8.decoder).forEach(print);
+    //process.stderr.transform(utf8.decoder).forEach(print);
     await process.exitCode;
     hideOpenDialog();
     Navigator.of(context).pop();
@@ -163,76 +279,6 @@ class _QuickgetFormState extends State<QuickgetForm> {
   }
 }
 
-
-class _MyHomePageState extends State<MyHomePage> {
-
-  void _showQuickgetForm() {
-    Navigator.of(context).push(
-        MaterialPageRoute<void>(
-            builder: (context) {
-              return Scaffold(
-                  appBar: AppBar(
-                    title: const Text('New VM with Quickget'),
-                  ),
-                  body: const QuickgetForm()
-              );
-            }
-        )
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              'Hi!',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showQuickgetForm,
-        tooltip: 'Add VM with quickget',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
-}
 
 class LoadingIndicator extends StatelessWidget{
   LoadingIndicator({this.text = ''});
