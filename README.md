@@ -20,9 +20,24 @@ Build or [download](https://github.com/marxjohnson/quickemu_gui/releases/) the q
 Run `quickemu_gui` from the directory where you have, or want, quickemu VMs to live.
 
 The app will find any quickemu config files, detect whether the associated VMs are running, and
-display a list. VMs can be started or stopped using the "Play" button on the list. VMs that
+display a list. 
+
+![Screenshot of list view on startup](screenshots/list.png "List on startup")
+
+
+VMs can be started or stopped using the "Play" button on the list. VMs that
 are currently running will have a green "Play" button.
 
-New VMs can be added using `quickget` but tapping the "+" button. Select the OS and release, then
-press the "Quick, get!" button. Wait for the OS image to download, and it will be added to your
+New VMs can be added using `quickget` but tapping the "+" button. 
+![adding a VM](screenshots/newvm0.png "Add a vm")
+
+Select the OS and release, 
+![adding a VM](screenshots/newvm1.png "Choosing release") 
+![adding a VM](screenshots/newvm2.png "Choosing release")
+![adding a VM](screenshots/newvm3.png "Choosing release")
+then
+press the "Quick, get!" button. 
+![getting a VM](screenshots/newvm5.png "Getting and new VM")
+Wait for the OS image to download, and it will be added to your
 list.
+![yet another VM](screenshots/newvm6.png "One more VM")
