@@ -40,3 +40,4 @@ press the "Quick, get!" button.
 ![getting a VM](screenshots/newvm5.png "Getting and new VM")
 Wait for the OS image to download, and it will be added to your
 list.
+![yet another VM](screenshots/newvm6.png "One more VM")
