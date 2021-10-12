@@ -63,27 +63,29 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _getVms(context) async {
     Directory currentDirectory = Directory.current;
-    setState(() {
-      _currentVms = [];
-      _activeVms = [];
-    });
+
+    List<String> currentVms = [];
+    List<String> activeVms = [];
 
     await for (var entity in
-      currentDirectory.list(recursive: false, followLinks: true)) {
+    currentDirectory.list(recursive: false, followLinks: true)) {
       if (entity.path.endsWith('.conf')) {
         String name = Path.basenameWithoutExtension(entity.path);
-        setState(() {
-          _currentVms.add(name);
-        });
+        currentVms.add(name);
         ProcessResult runningCheck = await Process.run('ps', ['-C', name]);
         if (runningCheck.exitCode == 0) {
-          setState(() {
-            _activeVms.add(name);
-          });
+          activeVms.add(name);
         }
       }
     }
+    currentVms.sort();
+    activeVms.sort();
+    setState(() {
+      _currentVms = currentVms;
+      _activeVms = activeVms;
+    });
   }
+
 
   void _showQuickgetForm() {
     Navigator.of(context).push(
