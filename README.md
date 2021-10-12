@@ -31,6 +31,12 @@ are currently running will have a green "Play" button.
 New VMs can be added using `quickget` but tapping the "+" button. 
 ![adding a VM](screenshots/newvm0.png "Add a vm")
 
-Select the OS and release, then
-press the "Quick, get!" button. Wait for the OS image to download, and it will be added to your
+Select the OS and release, 
+![adding a VM](screenshots/newvm1.png "Choosing release") 
+![adding a VM](screenshots/newvm2.png "Choosing release")
+![adding a VM](screenshots/newvm3.png "Choosing release")
+then
+press the "Quick, get!" button. 
+![getting a VM](screenshots/newvm5.png "Getting and new VM")
+Wait for the OS image to download, and it will be added to your
 list.
