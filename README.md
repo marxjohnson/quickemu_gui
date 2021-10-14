@@ -22,22 +22,22 @@ Run `quickemu_gui` from the directory where you have, or want, quickemu VMs to l
 The app will find any quickemu config files, detect whether the associated VMs are running, and
 display a list. 
 
-![Screenshot of list view on startup](screenshots/list.png "List on startup")
+![Screenshot of list view on startup](screenshots/list.jpg "List on startup")
 
 
 VMs can be started or stopped using the "Play" button on the list. VMs that
 are currently running will have a green "Play" button.
 
 New VMs can be added using `quickget` but tapping the "+" button. 
-![adding a VM](screenshots/newvm0.png "Add a vm")
+![adding a VM](screenshots/newvm0.jpg "Add a vm")
 
 Select the OS and release, 
-![adding a VM](screenshots/newvm1.png "Choosing release") 
-![adding a VM](screenshots/newvm2.png "Choosing release")
-![adding a VM](screenshots/newvm3.png "Choosing release")
+![adding a VM](screenshots/newvm1.jpg "Choosing release") 
+![adding a VM](screenshots/newvm2.jpg "Choosing release")
+![adding a VM](screenshots/newvm3.jpg "Choosing release")
 then
 press the "Quick, get!" button. 
-![getting a VM](screenshots/newvm5.png "Getting and new VM")
+![getting a VM](screenshots/newvm5.jpg "Getting and new VM")
 Wait for the OS image to download, and it will be added to your
 list.
-![yet another VM](screenshots/newvm6.png "One more VM")
+![yet another VM](screenshots/newvm6.jpg "One more VM")
