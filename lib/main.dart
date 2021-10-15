@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as Path;
+import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import 'dart:convert';
 
@@ -62,13 +63,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _getVms(context) async {
-    Directory currentDirectory = Directory.current;
-
     List<String> currentVms = [];
     List<String> activeVms = [];
 
     await for (var entity in
-    currentDirectory.list(recursive: false, followLinks: true)) {
+    Directory.current.list(recursive: false, followLinks: true)) {
       if (entity.path.endsWith('.conf')) {
         String name = Path.basenameWithoutExtension(entity.path);
         currentVms.add(name);
@@ -107,12 +106,29 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildVmList() {
+    List<Widget> _widgetList = [];
+    _widgetList.add(
+      TextButton(
+        onPressed: () async {
+          String? result = await FilePicker.platform.getDirectoryPath();
+          if (result != null) {
+            Directory.current = result;
+            _getVms(context);
+          }
+        },
+        child: Text(Directory.current.path)
+      )
+    );
+    _widgetList.addAll(
+      _currentVms.map(
+        (vm) {
+          return _buildRow(vm);
+        }
+      ).toList()
+    );
     return ListView(
         padding: const EdgeInsets.all(16.0),
-        children: _currentVms.map(
-            (vm) {
-              return _buildRow(vm);
-            }).toList(),
+        children: _widgetList,
     );
   }
 
