@@ -55,6 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<String> _currentVms = [];
   List<String> _activeVms = [];
+  List<String> _spicyVms = [];
 
   void initState() {
     super.initState();
@@ -134,28 +135,58 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildRow(String currentVm) {
     final active = _activeVms.contains(currentVm);
+    final spicy = _spicyVms.contains(currentVm);
     return ListTile(
         title: Text(currentVm),
-        trailing: IconButton(
-            icon: Icon(
-              active ? Icons.play_arrow : Icons.play_arrow_outlined,
-              color: active ? Colors.green : null,
-              semanticLabel: active ? 'Running' : 'Run',
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            IconButton(
+                icon: Icon(
+                  Icons.monitor,
+                  color: spicy ? Colors.red : null,
+                  semanticLabel: spicy ? 'Using SPICE display' : 'Click to use SPICE display'
+                ),
+                tooltip: spicy ? 'Using SPICE display' : 'Use SPICE display',
+                onPressed: () {
+                  if (spicy) {
+                    setState(() {
+                      _spicyVms.remove(currentVm);
+                    });
+                  } else {
+                    setState(() {
+                      _spicyVms.add(currentVm);
+                    });
+                  }
+                }
             ),
-            onPressed: () {
-              if (active) {
-                Process.run('killall', [currentVm]);
-                setState(() {
-                  _activeVms.remove(currentVm);
-                });
-              } else {
-                Process.run('quickemu', ['--vm', currentVm + '.conf']);
-                setState(() {
-                  _activeVms.add(currentVm);
-                });
-              }
-            }
+            IconButton(
+                icon: Icon(
+                  active ? Icons.play_arrow : Icons.play_arrow_outlined,
+                  color: active ? Colors.green : null,
+                  semanticLabel: active ? 'Running' : 'Run',
+                ),
+                onPressed: () {
+                  if (active) {
+                    Process.run('killall', [currentVm]);
+                    setState(() {
+                      _activeVms.remove(currentVm);
+                    });
+                  } else {
+                    List<String> args = ['--vm', currentVm + '.conf'];
+                    if (spicy) {
+                      args.addAll(['--display', 'spice']);
+                    }
+                    Process.run('quickemu', args);
+                    setState(() {
+                      _activeVms.add(currentVm);
+                    });
+                  }
+                }
+            )
+          ],
         )
+
     );
   }
 
