@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as Path;
 import 'package:file_picker/file_picker.dart';
@@ -56,11 +57,22 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> _currentVms = [];
   List<String> _activeVms = [];
   List<String> _spicyVms = [];
+  Timer? refreshTimer;
 
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance
-        ?.addPostFrameCallback((_) => _getVms(context));
+        ?.addPostFrameCallback((_) => _getVms(context)); // Reload VM list when we enter the page.
+    refreshTimer = Timer.periodic(Duration(seconds: 5), (Timer t) {
+      _getVms(context);
+    }); // Reload VM list every 15 seconds.
+  }
+
+  @override
+  void dispose() {
+    refreshTimer?.cancel();
+    super.dispose();
   }
 
   void _getVms(context) async {
