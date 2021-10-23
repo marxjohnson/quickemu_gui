@@ -84,12 +84,11 @@ class _MyHomePageState extends State<MyHomePage> {
       if (entity.path.endsWith('.conf')) {
         String name = Path.basenameWithoutExtension(entity.path);
         currentVms.add(name);
-        File pidFile = File(name + '/' + name + '.pid');
-        if (pidFile.existsSync()) {
-          String pid = pidFile.readAsStringSync();
-          if (Process.killPid(int.parse(pid), ProcessSignal.sigusr2)) {
-            activeVms.add(name);
-          }
+        ProcessResult runningCheck = await Process.run('pgrep', ['-f', name]);
+        if (runningCheck.exitCode == 0) {
+          setState(() {
+            _activeVms.add(name);
+          });
         }
       }
     }
