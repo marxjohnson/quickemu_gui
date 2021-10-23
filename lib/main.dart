@@ -184,12 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   semanticLabel: active ? 'Running' : 'Run',
                 ),
                 onPressed: () {
-                  if (active) {
-                    Process.run('killall', [currentVm]);
-                    setState(() {
-                      _activeVms.remove(currentVm);
-                    });
-                  } else {
+                  if (!active) {
                     List<String> args = ['--vm', currentVm + '.conf'];
                     if (spicy) {
                       args.addAll(['--display', 'spice']);
@@ -200,7 +195,22 @@ class _MyHomePageState extends State<MyHomePage> {
                     });
                   }
                 }
-            )
+            ),
+            IconButton(
+                icon: Icon(
+                  active ? Icons.stop : Icons.stop_outlined,
+                  color: active ? Colors.red : null,
+                  semanticLabel: active ? 'Stop' : 'Not running',
+                ),
+                onPressed: () {
+                  if (active) {
+                    Process.run('killall', [currentVm]);
+                    setState(() {
+                      _activeVms.remove(currentVm);
+                    });
+                  }
+                }
+            ),
           ],
         )
 
