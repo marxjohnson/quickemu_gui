@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as Path;
@@ -86,8 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
         currentVms.add(name);
         File pidFile = File(name + '/' + name + '.pid');
         if (pidFile.existsSync()) {
-          String pid = pidFile.readAsStringSync();
-          if (Process.killPid(int.parse(pid), ProcessSignal.sigusr2)) {
+          String pid = pidFile.readAsStringSync().trim();
+          Directory procDir = Directory('/proc/' + pid);
+          if (procDir.existsSync()) {
             activeVms.add(name);
           }
         }
@@ -306,6 +308,7 @@ class _QuickgetFormState extends State<QuickgetForm> {
       args.add(option);
     }
     var process = await Process.start('quickget', args);
+    process.stderr.transform(utf8.decoder).forEach(print);
     await process.exitCode;
     hideOpenDialog();
     Navigator.of(context).pop();
