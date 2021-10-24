@@ -203,13 +203,35 @@ class _MyHomePageState extends State<MyHomePage> {
                   semanticLabel: active ? 'Stop' : 'Not running',
                 ),
                 onPressed: () {
-                  if (active) {
-                    Process.run('killall', [currentVm]);
-                    setState(() {
-                      _activeVms.remove(currentVm);
-                    });
-                  }
+                if (active) {
+                  showDialog<bool>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Stop The Virtual Machine?'),
+                      content: Text(
+                          'You are about to terminate the virtual machine $currentVm'),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  ).then((result) {
+                    result = result ?? false;
+                    if (result) {
+                      Process.run('killall', [currentVm]);
+                      setState(() {
+                        _activeVms.remove(currentVm);
+                      });
+                    }
+                  });
                 }
+              },
             ),
           ],
         )
