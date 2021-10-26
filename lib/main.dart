@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as Path;
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -64,15 +65,35 @@ class _MyHomePageState extends State<MyHomePage> {
   Map<String, VmInfo> _activeVms = {};
   List<String> _spicyVms = [];
   Timer? refreshTimer;
+  static const String prefsWorkingDirectory = 'workingDirectory';
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance
-        ?.addPostFrameCallback((_) => _getVms(context)); // Reload VM list when we enter the page.
+    _getCurrentDirectory();
+    Future.delayed(Duration.zero, () => _getVms(context));// Reload VM list when we enter the page.
     refreshTimer = Timer.periodic(Duration(seconds: 5), (Timer t) {
       _getVms(context);
     }); // Reload VM list every 15 seconds.
+  }
+
+  void _saveCurrentDirectory() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(prefsWorkingDirectory, Directory.current.path);
+  }
+
+  void _getCurrentDirectory() async {
+    final prefs = await SharedPreferences.getInstance();
+    // 2
+    if (prefs.containsKey(prefsWorkingDirectory)) {
+      // 3
+      setState(() {
+        final directory = prefs.getString(prefsWorkingDirectory);
+        if (directory != null) {
+          Directory.current = directory;
+        }
+      });
+    }
   }
 
   @override
@@ -154,6 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
           String? result = await FilePicker.platform.getDirectoryPath();
           if (result != null) {
             Directory.current = result;
+            _saveCurrentDirectory();
             _getVms(context);
           }
         },
