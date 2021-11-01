@@ -1,5 +1,7 @@
 # quickemu_gui
 
+**This project has been merged with [Quickgui](https://github.com/quickgui/quickgui) and is no longer being updated.**
+  
 A GUI for [Quickemu](https://github.com/wimpysworld/quickemu)
 
 Provides an interface for setting up new VMs with Quickget, starting and stopping existing VMs.
